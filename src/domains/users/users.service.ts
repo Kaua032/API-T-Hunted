@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +22,14 @@ export class UsersService {
       throw new ConflictException('Email already registered');
     }
 
-    const user = this.userRepository.create(createUserDto);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+
     return await this.userRepository.save(user);
   }
 
@@ -41,6 +49,11 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
+
+    if (updateUserDto.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, salt);
+    }
     
     this.userRepository.merge(user, updateUserDto);
     return await this.userRepository.save(user);
