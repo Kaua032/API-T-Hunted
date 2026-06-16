@@ -1,26 +1,63 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Collection, CarCondition } from './entities/collection.entity';
+import { AddCarToCollectionDto } from './dto/add-car.dto';
 
 @Injectable()
 export class CollectionsService {
-  create(createCollectionDto: CreateCollectionDto) {
-    return 'This action adds a new collection';
+  constructor(
+    @InjectRepository(Collection)
+    private readonly collectionRepository: Repository<Collection>,
+  ) {}
+
+  async addCar(userId: string, addCarDto: AddCarToCollectionDto): Promise<Collection> {
+    const { carId, quantity = 1, condition = CarCondition.LOOSE } = addCarDto;
+
+    let collectionItem = await this.collectionRepository.findOne({
+      where: {
+        user: { id: userId },
+        car: { id: carId },
+        condition: condition,
+      },
+    });
+
+    if (collectionItem) {
+      collectionItem.quantity += quantity;
+      return await this.collectionRepository.save(collectionItem);
+    }
+
+    collectionItem = this.collectionRepository.create({
+      user: { id: userId },
+      car: { id: carId },
+      quantity,
+      condition,
+    });
+
+    return await this.collectionRepository.save(collectionItem);
   }
 
-  findAll() {
-    return `This action returns all collections`;
+  async updateQuantity(userId: string, collectionId: string, quantity: number): Promise<Collection> {
+    const item = await this.collectionRepository.findOne({
+      where: { id: collectionId, user: { id: userId } },
+    });
+
+    if (!item) {
+      throw new NotFoundException('Item não encontrado na sua coleção.');
+    }
+
+    item.quantity = quantity;
+    return await this.collectionRepository.save(item);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} collection`;
-  }
+  async removeCar(userId: string, collectionId: string): Promise<void> {
+    const result = await this.collectionRepository.delete({
+      id: collectionId,
+      user: { id: userId },
+    });
 
-  update(id: number, updateCollectionDto: UpdateCollectionDto) {
-    return `This action updates a #${id} collection`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} collection`;
+    if (result.affected === 0) {
+      throw new NotFoundException('Item não encontrado na sua coleção.');
+    }
   }
 }
