@@ -1,4 +1,15 @@
-import { Controller, Post, Body, UseGuards, Req, Delete, Param, Patch, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  Delete,
+  Param,
+  Patch,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { AddCarToCollectionDto } from './dto/add-car.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,12 +31,22 @@ export class CollectionsController {
     @Param('id') collectionId: string,
     @Body('quantity', ParseIntPipe) quantity: number,
   ) {
-    return await this.collectionsService.updateQuantity(req.user.id, collectionId, quantity);
+    return await this.collectionsService.updateQuantity(
+      req.user.id,
+      collectionId,
+      quantity,
+    );
   }
 
   @Delete(':id')
   async removeCar(@Req() req: any, @Param('id') collectionId: string) {
     await this.collectionsService.removeCar(req.user.id, collectionId);
     return { message: 'Miniatura removida da coleção com sucesso.' };
+  }
+
+  @Get()
+  async getMyCollection(@Req() req: any) {
+    const userId = req.user.userId; // <-- Use a propriedade correta do seu JWT aqui
+    return await this.collectionsService.getMyCollection(userId);
   }
 }

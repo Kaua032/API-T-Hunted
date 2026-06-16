@@ -60,4 +60,12 @@ export class CollectionsService {
       throw new NotFoundException('Item não encontrado na sua coleção.');
     }
   }
+
+  async getMyCollection(userId: string): Promise<Collection[]> {
+    return await this.collectionRepository.find({
+      where: { user: { id: userId } },
+      relations: { car: true },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
