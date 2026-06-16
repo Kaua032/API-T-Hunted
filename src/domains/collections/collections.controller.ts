@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Delete, Param, Patch, ParseIntPipe } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
-import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { AddCarToCollectionDto } from './dto/add-car.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Ajuste o caminho se necessário
 
+@UseGuards(JwtAuthGuard)
 @Controller('collections')
 export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
   @Post()
-  create(@Body() createCollectionDto: CreateCollectionDto) {
-    return this.collectionsService.create(createCollectionDto);
+  async addCar(@Req() req: any, @Body() addCarDto: AddCarToCollectionDto) {
+    const userId = req.user.userId;
+    return await this.collectionsService.addCar(userId, addCarDto);
   }
 
-  @Get()
-  findAll() {
-    return this.collectionsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.collectionsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCollectionDto: UpdateCollectionDto) {
-    return this.collectionsService.update(+id, updateCollectionDto);
+  @Patch(':id/quantity')
+  async updateQuantity(
+    @Req() req: any,
+    @Param('id') collectionId: string,
+    @Body('quantity', ParseIntPipe) quantity: number,
+  ) {
+    return await this.collectionsService.updateQuantity(req.user.id, collectionId, quantity);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.collectionsService.remove(+id);
+  async removeCar(@Req() req: any, @Param('id') collectionId: string) {
+    await this.collectionsService.removeCar(req.user.id, collectionId);
+    return { message: 'Miniatura removida da coleção com sucesso.' };
   }
 }
