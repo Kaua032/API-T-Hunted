@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Req, Delete, Param, Patch, ParseIntPipe } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { AddCarToCollectionDto } from './dto/add-car.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Ajuste o caminho se necessário
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('collections')
