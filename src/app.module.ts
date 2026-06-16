@@ -3,6 +3,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'; // <-- Ad
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './domains/users/users.module';
+import { AuthModule } from './domains/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './domains/users/users.module';
         configService.get<TypeOrmModuleOptions>('database') as TypeOrmModuleOptions, 
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
