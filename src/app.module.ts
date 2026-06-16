@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './domains/users/users.module';
 import { AuthModule } from './domains/auth/auth.module';
+import { CarsModule } from './domains/cars/cars.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './domains/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    CarsModule,
   ],
   controllers: [],
   providers: [],
