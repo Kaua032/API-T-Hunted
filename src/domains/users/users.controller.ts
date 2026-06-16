@@ -36,6 +36,7 @@ export class UsersController {
     return await this.usersService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -44,6 +45,7 @@ export class UsersController {
     return await this.usersService.update(id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
