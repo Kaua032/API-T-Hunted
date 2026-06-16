@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, ILike } from 'typeorm';
+import { Car } from './entities/car.entity';
 import { CreateCarDto } from './dto/create-car.dto';
-import { UpdateCarDto } from './dto/update-car.dto';
+import { SearchCarDto } from './dto/search-car.dto';
 
 @Injectable()
 export class CarsService {
-  create(createCarDto: CreateCarDto) {
-    return 'This action adds a new car';
+  constructor(
+    @InjectRepository(Car)
+    private readonly carRepository: Repository<Car>,
+  ) {}
+
+  async create(createCarDto: CreateCarDto): Promise<Car> {
+    const carExists = await this.carRepository.findOne({
+      where: { toyNumber: createCarDto.toyNumber },
+    });
+
+    if (carExists) {
+      throw new ConflictException('A miniatura com este Toy Number já está cadastrada.');
+    }
+
+    const car = this.carRepository.create(createCarDto);
+    return await this.carRepository.save(car);
   }
 
-  findAll() {
-    return `This action returns all cars`;
-  }
+  async findAll(searchCarDto: SearchCarDto) {
+    const { name, series, year, isTh, isSth, page = 1, limit = 10 } = searchCarDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} car`;
-  }
+    const where: any = {};
 
-  update(id: number, updateCarDto: UpdateCarDto) {
-    return `This action updates a #${id} car`;
-  }
+    if (name) where.name = ILike(`%${name}%`);
+    if (series) where.series = ILike(`%${series}%`);
+    if (year) where.year = year;
+    if (isTh !== undefined) where.isTh = isTh;
+    if (isSth !== undefined) where.isSth = isSth;
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+    const [data, total] = await this.carRepository.findAndCount({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { year: 'DESC', name: 'ASC' },
+    });
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 }
