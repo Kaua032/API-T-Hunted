@@ -36,4 +36,8 @@ export class SearchCarDto {
   @IsNumber()
   @Min(1)
   limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  toyNumber?: string;
 }

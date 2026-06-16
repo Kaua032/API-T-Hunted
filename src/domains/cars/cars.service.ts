@@ -26,10 +26,11 @@ export class CarsService {
   }
 
   async findAll(searchCarDto: SearchCarDto) {
-    const { name, series, year, isTh, isSth, page = 1, limit = 10 } = searchCarDto;
+    const { name, series, year, isTh, isSth, page = 1, limit = 10, toyNumber } = searchCarDto;
 
     const where: any = {};
 
+    if (toyNumber) where.toyNumber = ILike(`%${toyNumber}%`);
     if (name) where.name = ILike(`%${name}%`);
     if (series) where.series = ILike(`%${series}%`);
     if (year) where.year = year;
