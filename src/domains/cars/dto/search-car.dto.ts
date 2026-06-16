@@ -11,12 +11,12 @@ export class SearchCarDto {
   series?: string;
 
   @IsOptional()
-  @Type(() => Number) // Converte a string da URL para Número
+  @Type(() => Number)
   @IsNumber()
   year?: number;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true') // Converte a string 'true' para Booleano
+  @Transform(({ value }) => value === 'true')
   @IsBoolean()
   isTh?: boolean;
 
