@@ -5,6 +5,7 @@ import databaseConfig from './config/database.config';
 import { UsersModule } from './domains/users/users.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { CarsModule } from './domains/cars/cars.module';
+import { CollectionsModule } from './domains/collections/collections.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CarsModule } from './domains/cars/cars.module';
     UsersModule,
     AuthModule,
     CarsModule,
+    CollectionsModule,
   ],
   controllers: [],
   providers: [],
