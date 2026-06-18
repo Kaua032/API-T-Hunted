@@ -56,7 +56,7 @@ export class MarketSearchService {
         {
           params: {
             q: query,
-            limit: 5,
+            limit: 10,
             category_ids: '222',
           },
           headers: {

@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Unique,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Car } from '../../cars/entities/car.entity';
 
@@ -22,6 +30,9 @@ export class Collection {
     default: CarCondition.LOOSE,
   })
   condition!: CarCondition;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  purchase_price: number;
 
   @ManyToOne(() => User, (user) => user.collections, { onDelete: 'CASCADE' })
   user!: User;
