@@ -8,6 +8,7 @@ import { UsersModule } from './domains/users/users.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { CarsModule } from './domains/cars/cars.module';
 import { CollectionsModule } from './domains/collections/collections.module';
+import { MarketSearchModule } from './domains/market-search/market-search.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CollectionsModule } from './domains/collections/collections.module';
     AuthModule,
     CarsModule,
     CollectionsModule,
+    MarketSearchModule,
   ],
   controllers: [],
   providers: [

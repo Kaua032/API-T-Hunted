@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsUUID, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsUUID, Min, IsNumber } from 'class-validator';
 import { CarCondition } from '../entities/collection.entity';
 
 export class AddCarToCollectionDto {
@@ -14,4 +14,8 @@ export class AddCarToCollectionDto {
   @IsEnum(CarCondition, { message: 'A condição deve ser "loose" ou "carded".' })
   @IsOptional()
   condition?: CarCondition;
+
+  @IsNumber({}, { message: 'O preço de compra deve ser um número.' })
+  @IsOptional()
+  purchase_price?: number;
 }

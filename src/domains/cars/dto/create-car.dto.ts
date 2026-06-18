@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean, IsUrl, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsUrl,
+  Min,
+} from 'class-validator';
 
 export class CreateCarDto {
   @IsString()
@@ -14,7 +22,10 @@ export class CreateCarDto {
   series!: string;
 
   @IsNumber()
-  @Min(1968, { message: 'O ano não pode ser inferior a 1968 (Ano de lançamento da Hot Wheels).' })
+  @Min(1968, {
+    message:
+      'O ano não pode ser inferior a 1968 (Ano de lançamento da Hot Wheels).',
+  })
   year!: number;
 
   @IsUrl({}, { message: 'Forneça uma URL válida para a imagem.' })
