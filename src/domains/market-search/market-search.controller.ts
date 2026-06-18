@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseInterceptors,
+  BadRequestException,
+} from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { MarketSearchService } from './market-search.service';
-import { CreateMarketSearchDto } from './dto/create-market-search.dto';
-import { UpdateMarketSearchDto } from './dto/update-market-search.dto';
 
 @Controller('market-search')
+@UseInterceptors(CacheInterceptor)
 export class MarketSearchController {
   constructor(private readonly marketSearchService: MarketSearchService) {}
 
-  @Post()
-  create(@Body() createMarketSearchDto: CreateMarketSearchDto) {
-    return this.marketSearchService.create(createMarketSearchDto);
-  }
-
   @Get()
-  findAll() {
-    return this.marketSearchService.findAll();
-  }
+  @CacheTTL(300)
+  async search(@Query('query') query: string) {
+    if (!query) {
+      throw new BadRequestException(
+        'O parâmetro de busca "query" é obrigatório.',
+      );
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.marketSearchService.findOne(+id);
-  }
+    const optimizedQuery = query.toLowerCase().includes('hot wheels')
+      ? query
+      : `hot wheels ${query}`;
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMarketSearchDto: UpdateMarketSearchDto) {
-    return this.marketSearchService.update(+id, updateMarketSearchDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.marketSearchService.remove(+id);
+    return await this.marketSearchService.searchMiniature(optimizedQuery);
   }
 }
