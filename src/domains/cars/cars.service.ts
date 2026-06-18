@@ -85,17 +85,14 @@ export class CarsService {
   }
 
   async searchByToyNumber(toyNumber: string) {
-    // 1. Busca no banco local (Ignorando maiúsculas/minúsculas com ILike)
     const car = await this.carRepository.findOne({
       where: { toyNumber: ILike(toyNumber) },
     });
 
-    // CENÁRIO A: O carro já existe no banco de dados
     if (car) {
       const now = new Date();
       const TWENTY_FOUR_HOURS_IN_MS = 24 * 60 * 60 * 1000;
 
-      // Verifica se o preço está atualizado (menos de 24h)
       const hasValidPrice = car.lastUpdateAt !== null && car.averagePrice !== null;
       const isPriceFresh =
         hasValidPrice &&
@@ -117,7 +114,6 @@ export class CarsService {
         };
       }
 
-      // Se passou de 24h, atualiza o preço antes de retornar
       const marketInfo = await this.getMarketPrice(car.id);
       return {
         ...car,
@@ -126,7 +122,6 @@ export class CarsService {
       };
     }
 
-    // CENÁRIO B: O carro NÃO existe no banco de dados (Busca fantasma no eBay)
     const searchQuery = `hot wheels ${toyNumber}`;
     const marketData = await this.marketSearchService.searchMiniature(searchQuery);
 
@@ -145,17 +140,14 @@ export class CarsService {
       };
     }
 
-    // Calcula a média dos anúncios do eBay
     const average = this.calculateAveragePrice(marketData);
     
-    // Pega a foto do primeiro anúncio válido para ilustrar a tela do usuário
     const firstValidImage = marketData.find((item) => item.imageUrl)?.imageUrl || null;
 
-    // Retorna o objeto "virtual" para o Front-end exibir a opção de cadastro
     return {
-      id: null, // Front-end sabe que é nulo, então precisa cadastrar ao clicar em salvar
+      id: null,
       toyNumber: toyNumber.toUpperCase(),
-      name: marketData[0].title, // Título aproximado do mercado
+      name: marketData[0].title,
       series: 'Mainline',
       year: new Date().getFullYear(),
       imageUrl: firstValidImage,
@@ -192,7 +184,7 @@ export class CarsService {
       };
     }
 
-    const searchQuery = `hot wheels ${car.name} ${car.toyNumber}`;
+    const searchQuery = `hot wheels ${car.toyNumber}`;
 
     const marketData =
       await this.marketSearchService.searchMiniature(searchQuery);
