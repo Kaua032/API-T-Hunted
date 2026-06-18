@@ -32,7 +32,13 @@ export class Car {
   @Column({ type: 'boolean', default: false, name: 'is_sth' })
   isSth!: boolean;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, name: 'average_price' })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    name: 'average_price',
+  })
   averagePrice!: number | null;
 
   @Column({ type: 'timestamp', nullable: true, name: 'last_update_at' })
