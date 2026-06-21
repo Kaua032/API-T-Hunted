@@ -32,7 +32,7 @@ export class CollectionsController {
     @Body('quantity', ParseIntPipe) quantity: number,
   ) {
     return await this.collectionsService.updateQuantity(
-      req.user.id,
+      req.user.userId,
       collectionId,
       quantity,
     );
