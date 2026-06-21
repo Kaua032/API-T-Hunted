@@ -51,4 +51,4 @@ export class UsersController {
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return await this.usersService.remove(id);
   }
-}''
+}
